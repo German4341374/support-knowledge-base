@@ -177,9 +177,9 @@ public class ArticleService {
 
   private Sort requestedSort(String sort) {
     if ("popular".equalsIgnoreCase(sort)) {
-      return Sort.by(Sort.Direction.DESC, "views").and(Sort.by(Sort.Direction.DESC, "updatedAt"));
+      return Sort.by(Sort.Direction.DESC, "views").and(Sort.by(Sort.Direction.DESC, "updated_at"));
     }
-    return Sort.by(Sort.Direction.DESC, "updatedAt");
+    return Sort.by(Sort.Direction.DESC, "updated_at");
   }
 
   private String cleanText(String value) {
