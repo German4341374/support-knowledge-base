@@ -304,6 +304,7 @@ Dependabot checks Maven, Docker, and GitHub Actions dependencies weekly.
 - Search analytics may contain user-entered terms. Establish a retention policy and tell users not to enter credentials or personal data.
 - Actuator exposes only health and info, with health details hidden.
 - The runtime image uses a numeric non-root user; Compose drops Linux capabilities, enables `no-new-privileges`, and uses a read-only root filesystem.
+- Compose exposes the application through an edge network while PostgreSQL remains isolated on an internal backend network.
 
 See [SECURITY.md](SECURITY.md) and [docs/operations.md](docs/operations.md).
 

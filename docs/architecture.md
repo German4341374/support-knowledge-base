@@ -6,6 +6,8 @@ The UI and REST API live in one Spring Boot process and share the same applicati
 
 A separate frontend service would add networking, versioning, and deployment complexity without improving the current user scenarios.
 
+Docker Compose places the application on an edge network for its published HTTP port and on an internal backend network for database access. PostgreSQL joins only the backend network, so it has no direct external route.
+
 ## PostgreSQL as the search engine
 
 Search is a core data concern, so PostgreSQL stores and queries the search document:
@@ -39,4 +41,3 @@ The `version` column prevents one stale edit from silently overwriting another. 
 Zero-result queries are stored separately from articles. This gives maintainers a concrete documentation backlog without adding an analytics platform.
 
 Search terms may be sensitive. Operators should document retention and prohibit credentials or personal data in searches.
-

@@ -99,7 +99,7 @@ jobs:
             sleep 2
           done
           curl --fail --silent "http://127.0.0.1:8080/api/articles?query=vpn" \
-            | grep --quiet "connect-to-the-corporate-vpn"
+            | grep --quiet "fix-vpn-authentication-failed"
 
       - name: Capture UI previews
         run: |
