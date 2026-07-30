@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${editing ? 'Edit article' : 'New article'})}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow">Content workspace</p>
+      <h1 th:text="${editing ? 'Edit article' : 'Create article'}">Article</h1>
+      <p>Write focused steps, use descriptive headings, and keep one troubleshooting outcome per article.</p>
+    </div>
+    <a class="button ghost" href="/manage/articles">Back to articles</a>
+  </section>
+
+  <p class="success-message page-message" th:if="${message}" th:text="${message}">Saved.</p>
+
+  <section class="editor-layout">
+    <form class="editor-form" th:object="${articleForm}"
+          th:action="${editing} ? @{/manage/articles/{id}(id=${article.id})} : @{/manage/articles}"
+          method="post">
+      <label for="title">Title</label>
+      <input id="title" th:field="*{title}" maxlength="180" required
+             placeholder="Resolve VPN authentication failures">
+      <small class="field-error" th:errors="*{title}">Title error</small>
+
+      <label for="summary">Summary</label>
+      <textarea id="summary" th:field="*{summary}" rows="3" maxlength="320" required
+                placeholder="Explain what the reader will accomplish."></textarea>
+      <small class="field-error" th:errors="*{summary}">Summary error</small>
+
+      <div class="form-grid">
+        <label>
+          Category
+          <input th:field="*{category}" maxlength="80" required placeholder="Network">
+          <small class="field-error" th:errors="*{category}">Category error</small>
+        </label>
+        <label>
+          Tags
+          <input th:field="*{tags}" maxlength="500" required
+                 placeholder="vpn, authentication, remote-work">
+          <small>Comma-separated, up to 12 tags.</small>
+          <small class="field-error" th:errors="*{tags}">Tag error</small>
+        </label>
+      </div>
+
+      <label for="content">Article HTML</label>
+      <textarea id="content" class="code-editor" th:field="*{content}" rows="18"
+                maxlength="30000" required
+                placeholder="<h2>Resolution</h2><ol><li>First step</li></ol>"></textarea>
+      <small>Allowed HTML is sanitized on save. Scripts, images, styles, and unsafe URLs are removed.</small>
+      <small class="field-error" th:errors="*{content}">Content error</small>
+
+      <div class="editor-actions">
+        <button type="submit" th:text="${editing ? 'Save changes' : 'Create draft'}">Save</button>
+        <a class="button ghost" href="/manage/articles">Cancel</a>
+      </div>
+    </form>
+
+    <aside class="editor-sidebar">
+      <div th:if="${editing}">
+        <p class="eyebrow">Publication</p>
+        <h2 th:text="${article.status}">DRAFT</h2>
+        <p th:text="${'Slug: ' + article.slug}">Slug</p>
+        <form th:if="${article.status.name() == 'DRAFT'}"
+              th:action="@{/manage/articles/{id}/publish(id=${article.id})}" method="post">
+          <button type="submit">Publish article</button>
+        </form>
+        <form th:if="${article.status.name() == 'PUBLISHED'}"
+              th:action="@{/manage/articles/{id}/unpublish(id=${article.id})}" method="post">
+          <button class="button secondary" type="submit">Unpublish</button>
+        </form>
+        <a th:if="${article.status.name() == 'PUBLISHED'}" class="text-link"
+           th:href="@{/articles/{slug}(slug=${article.slug})}">Open public article →</a>
+      </div>
+      <div>
+        <p class="eyebrow">Writing checklist</p>
+        <ul>
+          <li>Lead with the safest recovery path.</li>
+          <li>Explain when to stop and escalate.</li>
+          <li>Never include real credentials or personal data.</li>
+          <li>Use approved tools and destinations only.</li>
+        </ul>
+      </div>
+    </aside>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
+

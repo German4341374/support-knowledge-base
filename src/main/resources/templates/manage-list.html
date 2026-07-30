@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Manage articles')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow">Content workspace</p>
+      <h1>Manage articles</h1>
+      <p>Create, review, publish, and maintain the support catalog.</p>
+    </div>
+    <a class="button" href="/manage/articles/new">New article</a>
+  </section>
+
+  <section class="table-panel">
+    <table>
+      <thead>
+      <tr>
+        <th>Article</th>
+        <th>Category</th>
+        <th>Status</th>
+        <th>Views</th>
+        <th>Updated</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="article : ${articles.items}">
+        <td>
+          <a th:href="@{/manage/articles/{id}/edit(id=${article.id})}"
+             th:text="${article.title}">Article title</a>
+          <small th:text="${article.slug}">slug</small>
+        </td>
+        <td th:text="${article.category}">Category</td>
+        <td><span class="status-pill"
+                  th:classappend="${article.status.name() == 'PUBLISHED' ? ' published' : ' draft'}"
+                  th:text="${article.status}">DRAFT</span></td>
+        <td th:text="${article.views}">0</td>
+        <td th:text="${#temporals.format(article.updatedAt, 'MMM d, yyyy')}">Date</td>
+      </tr>
+      </tbody>
+    </table>
+    <nav class="pagination" th:if="${articles.totalPages > 1}">
+      <a th:if="${articles.page > 0}"
+         th:href="@{/manage/articles(page=${articles.page - 1})}">← Previous</a>
+      <span th:text="${'Page ' + (articles.page + 1) + ' of ' + articles.totalPages}">Page</span>
+      <a th:if="${articles.page + 1 < articles.totalPages}"
+         th:href="@{/manage/articles(page=${articles.page + 1})}">Next →</a>
+    </nav>
+  </section>
+
+  <aside class="scope-note">
+    <strong>Local portfolio scope</strong>
+    <p>This management screen intentionally has no authentication. Keep the application on a trusted network.</p>
+  </aside>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
+

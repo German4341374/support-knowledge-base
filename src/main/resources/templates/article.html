@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${article.title})}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main class="article-page">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span>/</span>
+    <a th:href="@{/search(category=${article.category})}"
+       th:text="${article.category}">Category</a>
+  </nav>
+
+  <div class="article-layout">
+    <article class="article-body">
+      <header>
+        <div class="card-meta">
+          <span class="category-pill" th:text="${article.category}">Category</span>
+          <span th:text="${article.views + ' views'}">Views</span>
+          <span th:text="${'Updated ' + #temporals.format(article.updatedAt, 'MMM d, yyyy')}">Updated</span>
+        </div>
+        <h1 th:text="${article.title}">Article title</h1>
+        <p class="article-summary" th:text="${article.summary}">Summary</p>
+        <div class="tag-row">
+          <a th:each="tag : ${article.tags}" th:href="@{/search(tag=${tag})}"
+             th:text="${'#' + tag}">#tag</a>
+        </div>
+      </header>
+      <div class="prose" th:utext="${article.content}"></div>
+
+      <section class="feedback-card">
+        <div>
+          <p class="eyebrow">Article feedback</p>
+          <h2>Was this answer helpful?</h2>
+          <p th:if="${feedbackRecorded}" class="success-message">Thank you for the feedback.</p>
+        </div>
+        <div class="feedback-actions">
+          <form th:action="@{/articles/{id}/feedback(id=${article.id})}" method="post">
+            <input type="hidden" name="slug" th:value="${article.slug}">
+            <input type="hidden" name="helpful" value="true">
+            <button type="submit" class="button secondary"
+                    th:text="${'Helpful · ' + article.helpfulCount}">Helpful</button>
+          </form>
+          <form th:action="@{/articles/{id}/feedback(id=${article.id})}" method="post">
+            <input type="hidden" name="slug" th:value="${article.slug}">
+            <input type="hidden" name="helpful" value="false">
+            <button type="submit" class="button ghost"
+                    th:text="${'Not helpful · ' + article.notHelpfulCount}">Not helpful</button>
+          </form>
+        </div>
+      </section>
+    </article>
+
+    <aside class="related-panel">
+      <p class="eyebrow">Keep exploring</p>
+      <h2>Related articles</h2>
+      <div class="related-list">
+        <a th:each="item : ${related}" th:href="@{/articles/{slug}(slug=${item.slug})}">
+          <span th:text="${item.category}">Category</span>
+          <strong th:text="${item.title}">Title</strong>
+          <small th:text="${item.views + ' views'}">Views</small>
+        </a>
+      </div>
+      <a class="text-link" th:href="@{/search(category=${article.category})}">More in this category →</a>
+    </aside>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
+

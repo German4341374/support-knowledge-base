@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Searchable technical support knowledge base">
+  <title th:text="${pageTitle + ' · Support KB'}">Support KB</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/site.css">
+</head>
+<body>
+<header class="site-header" th:fragment="header">
+  <a class="brand" href="/">
+    <span class="brand-mark">KB</span>
+    <span>Support Knowledge</span>
+  </a>
+  <nav aria-label="Primary navigation">
+    <a href="/">Home</a>
+    <a href="/search">Browse</a>
+    <a href="/manage/articles">Manage</a>
+    <a href="/swagger">API</a>
+  </nav>
+</header>
+
+<footer class="site-footer" th:fragment="footer">
+  <span>Practical answers for everyday support</span>
+  <nav aria-label="Footer navigation">
+    <a href="/actuator/health">Health</a>
+    <a href="https://github.com/German4341374/support-knowledge-base">Source</a>
+  </nav>
+</footer>
+</body>
+</html>
+

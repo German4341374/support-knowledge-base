@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Something went wrong')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main class="error-page">
+  <span class="error-code" th:text="${status ?: 'Error'}">404</span>
+  <p class="eyebrow">Knowledge base</p>
+  <h1 th:text="${error ?: 'Something went wrong'}">Something went wrong</h1>
+  <p>The requested page is unavailable. Return to search and try another article.</p>
+  <a class="button" href="/search">Search articles</a>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
+

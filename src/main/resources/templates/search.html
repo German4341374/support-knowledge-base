@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Search')}"></head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<main>
+  <section class="page-banner">
+    <p class="eyebrow">Knowledge explorer</p>
+    <h1>Search support articles</h1>
+    <p>Use natural words. PostgreSQL ranks title and summary matches above article content.</p>
+  </section>
+
+  <section class="search-layout">
+    <form class="filter-panel" action="/search" method="get">
+      <label for="query">Search</label>
+      <input id="query" name="q" type="search" th:value="${q}"
+             placeholder="VPN, printer, password reset…">
+
+      <label for="category">Category</label>
+      <select id="category" name="category">
+        <option value="">All categories</option>
+        <option th:each="item : ${categories}" th:value="${item}"
+                th:selected="${item == category}" th:text="${item}">Category</option>
+      </select>
+
+      <label for="tag">Tag</label>
+      <select id="tag" name="tag">
+        <option value="">All tags</option>
+        <option th:each="item : ${tags}" th:value="${item}"
+                th:selected="${item == tag}" th:text="${item}">Tag</option>
+      </select>
+
+      <label for="sort">Sort</label>
+      <select id="sort" name="sort">
+        <option value="recent" th:selected="${sort == 'recent'}">Most recent</option>
+        <option value="popular" th:selected="${sort == 'popular'}">Most viewed</option>
+      </select>
+
+      <button type="submit">Apply filters</button>
+      <a class="button ghost" href="/search">Clear</a>
+    </form>
+
+    <div class="results-panel">
+      <div class="results-heading">
+        <div>
+          <p class="eyebrow">Results</p>
+          <h2 th:text="${results.totalElements + ' article(s) found'}">Articles found</h2>
+        </div>
+        <span th:if="${!#strings.isEmpty(q)}" th:text="${'for “' + q + '”'}">for query</span>
+      </div>
+
+      <div class="empty-state" th:if="${results.items.empty}">
+        <strong>No matching article yet</strong>
+        <p>Try fewer words, remove a filter, or ask the support team to document this issue.</p>
+        <a class="button" href="/search">Reset search</a>
+      </div>
+
+      <div class="result-list">
+        <article class="result-card" th:each="article : ${results.items}">
+          <div class="card-meta">
+            <a class="category-pill"
+               th:href="@{/search(category=${article.category})}"
+               th:text="${article.category}">Category</a>
+            <span th:text="${article.views + ' views'}">Views</span>
+          </div>
+          <h3><a th:href="@{/articles/{slug}(slug=${article.slug})}"
+                 th:text="${article.title}">Title</a></h3>
+          <p th:text="${article.summary}">Summary</p>
+          <div class="tag-row">
+            <a th:each="item : ${article.tags}"
+               th:href="@{/search(tag=${item})}"
+               th:text="${'#' + item}">#tag</a>
+          </div>
+        </article>
+      </div>
+
+      <nav class="pagination" aria-label="Search pages" th:if="${results.totalPages > 1}">
+        <a th:if="${results.page > 0}"
+           th:href="@{/search(q=${q},category=${category},tag=${tag},sort=${sort},page=${results.page - 1})}">
+          ← Previous
+        </a>
+        <span th:text="${'Page ' + (results.page + 1) + ' of ' + results.totalPages}">Page</span>
+        <a th:if="${results.page + 1 < results.totalPages}"
+           th:href="@{/search(q=${q},category=${category},tag=${tag},sort=${sort},page=${results.page + 1})}">
+          Next →
+        </a>
+      </nav>
+    </div>
+  </section>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
+
