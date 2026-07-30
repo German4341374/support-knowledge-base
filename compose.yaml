@@ -47,7 +47,8 @@ services:
     mem_limit: 512m
     cpus: 1.0
     healthcheck:
-      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:8080/actuator/health"]
+      test:
+        ["CMD", "curl", "--fail", "--silent", "--max-time", "2", "http://127.0.0.1:8080/actuator/health"]
       interval: 10s
       timeout: 3s
       retries: 5

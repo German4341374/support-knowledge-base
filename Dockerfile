@@ -12,10 +12,15 @@ COPY src/ src/
 RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw --batch-mode --no-transfer-progress package -DskipTests
 
-FROM eclipse-temurin:25.0.3_9-jre-alpine-3.23@sha256:28db6fdf60e38945e43d840c0333aeaec66c15943070104f7586fd3c9d1665b0
+FROM eclipse-temurin:25.0.3_9-jre-noble@sha256:2f1da100788559b397bcf48c736169ea5b070bde84e55f203bbee8e83d87a175
 
-RUN addgroup -S app \
-    && adduser -S -G app -u 10001 app
+RUN apt-get update \
+    && apt-get upgrade --yes \
+    && apt-get install --yes --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 10001 app \
+    && useradd --uid 10001 --gid 10001 --no-create-home --home-dir /nonexistent \
+        --shell /usr/sbin/nologin app
 WORKDIR /app
 COPY --from=build --chown=app:app /workspace/target/support-knowledge-base-*.jar app.jar
 
@@ -26,7 +31,6 @@ USER 10001:10001
 EXPOSE 8080
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=25s --retries=5 \
-  CMD wget --spider --quiet http://127.0.0.1:8080/actuator/health || exit 1
+  CMD curl --fail --silent --show-error --max-time 2 http://127.0.0.1:8080/actuator/health || exit 1
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
-
