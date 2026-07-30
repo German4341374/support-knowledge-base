@@ -1,0 +1,8 @@
+.git
+.github
+.idea
+.tools
+target
+docs
+*.md
+

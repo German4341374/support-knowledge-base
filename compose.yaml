@@ -1,0 +1,62 @@
+name: support-knowledge-base
+
+services:
+  database:
+    image: postgres:18.4-alpine3.24@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-support_kb}
+      POSTGRES_USER: ${POSTGRES_USER:-support_kb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-support_kb_local}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+    image: support-knowledge-base:local
+    environment:
+      DATABASE_URL: jdbc:postgresql://database:5432/${POSTGRES_DB:-support_kb}
+      DATABASE_USER: ${POSTGRES_USER:-support_kb}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-support_kb_local}
+      DATABASE_POOL_SIZE: 8
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    networks:
+      - backend
+    depends_on:
+      database:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: 512m
+    cpus: 1.0
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:8080/actuator/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 25s
+    restart: unless-stopped
+
+networks:
+  backend:
+    internal: true
+
+volumes:
+  postgres_data:

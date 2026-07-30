@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Format, test, and package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Java
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+
+      - name: Make Maven wrapper executable
+        run: chmod +x mvnw
+
+      - name: Verify formatting
+        run: ./mvnw --batch-mode --no-transfer-progress spotless:check
+
+      - name: Run unit and Testcontainers tests
+        run: ./mvnw --batch-mode --no-transfer-progress verify
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: test-reports
+          path: target/surefire-reports
+          if-no-files-found: error
+          retention-days: 14
+
+  container:
+    name: Build and scan container
+    needs: quality
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Scan repository
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+
+      - name: Build image
+        run: docker build --tag support-knowledge-base:ci .
+
+      - name: Scan image
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: support-knowledge-base:ci
+          format: table
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+
+      - name: Start demonstration stack
+        run: |
+          docker tag support-knowledge-base:ci support-knowledge-base:local
+          docker compose up --detach --no-build
+
+      - name: Verify health and API
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8080/actuator/health; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker compose logs
+              exit 1
+            fi
+            sleep 2
+          done
+          curl --fail --silent "http://127.0.0.1:8080/api/articles?query=vpn" \
+            | grep --quiet "connect-to-the-corporate-vpn"
+
+      - name: Capture UI previews
+        run: |
+          npx --yes playwright@1.62.0 install --with-deps chromium
+          mkdir --parents screenshot-preview
+          npx --yes playwright@1.62.0 screenshot \
+            --browser=chromium --viewport-size="1440,900" --full-page \
+            http://127.0.0.1:8080/ screenshot-preview/home.png
+          npx --yes playwright@1.62.0 screenshot \
+            --browser=chromium --viewport-size="1440,900" \
+            "http://127.0.0.1:8080/search?q=vpn" screenshot-preview/search.png
+
+      - name: Upload UI previews
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ui-previews
+          path: screenshot-preview
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Stop demonstration stack
+        if: always()
+        run: docker compose down --volumes --remove-orphans
