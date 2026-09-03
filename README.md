@@ -318,7 +318,7 @@ See [SECURITY.md](SECURITY.md) and [docs/operations.md](docs/operations.md).
 - The application does not redirect old slugs after a title change.
 - PostgreSQL is required; H2 or another substitute is intentionally not used for tests.
 
-## Future improvements
+## Possible next steps
 
 - Add a dedicated authenticated reverse-proxy example.
 - Add article revision history and preview links.
