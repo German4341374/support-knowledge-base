@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/German4341374/support-knowledge-base/actions/workflows/ci.yml/badge.svg)](https://github.com/German4341374/support-knowledge-base/actions/workflows/ci.yml)
 [![Java 25](https://img.shields.io/badge/Java-25%20LTS-ED8B00)](pom.xml)
-[![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1.0-6DB33F)](pom.xml)
+[![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1.1-6DB33F)](pom.xml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Support Knowledge Base is a small searchable catalog for technical support teams. It turns repeated Windows, VPN, printer, Wi-Fi, browser, software, and email questions into reviewed, reusable answers.
@@ -109,7 +109,7 @@ Category and tag predicates can be combined with full-text search. Search reques
 ## Technology
 
 - Java 25 LTS
-- Spring Boot 4.1.0
+- Spring Boot 4.1.1
 - Spring MVC, Validation, Data JPA, Thymeleaf, and Actuator
 - PostgreSQL 18.4
 - Flyway
