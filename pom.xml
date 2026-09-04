@@ -19,7 +19,7 @@
 
   <properties>
     <java.version>25</java.version>
-    <jsoup.version>1.22.2</jsoup.version>
+    <jsoup.version>1.23.2</jsoup.version>
     <postgresql.version>42.7.12</postgresql.version>
     <springdoc.version>3.0.3</springdoc.version>
     <testcontainers.version>1.21.4</testcontainers.version>
