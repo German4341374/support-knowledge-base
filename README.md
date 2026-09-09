@@ -5,9 +5,12 @@
 [![Spring Boot 4.1](https://img.shields.io/badge/Spring%20Boot-4.1.1-6DB33F)](pom.xml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Support Knowledge Base is a small searchable catalog for technical support teams. It turns repeated Windows, VPN, printer, Wi-Fi, browser, software, and email questions into reviewed, reusable answers.
+A place to keep answers to support questions that come up again and again.
+Write an article, add a category and tags, and publish it when it's ready.
+Readers can search, browse related articles, and mark an answer helpful or not helpful.
 
-The project combines a responsive Thymeleaf interface with a REST API, PostgreSQL-native full-text search, explicit publishing workflows, safe HTML sanitization, migrations, and real database integration tests.
+Search runs in PostgreSQL, so there's no separate search service to install.
+The sample articles cover things like VPN problems, printers, Wi-Fi, and password resets.
 
 ## Features
 
