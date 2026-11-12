@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.10
-FROM eclipse-temurin:25.0.3_9-jdk-alpine-3.23@sha256:5ecfde8e5ecde5954ea3721155b345ef56c1d579b940c761318ad4c05959a151 AS build
+FROM eclipse-temurin:27_35-jdk-alpine-3.24@sha256:8b32b7f44f8752d9aaa0a58d2fb8d679aa719083f8f0c2d9bd90eb35f2fc149d AS build
 
 WORKDIR /workspace
 COPY .mvn/ .mvn/
@@ -12,7 +12,7 @@ COPY src/ src/
 RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw --batch-mode --no-transfer-progress package -DskipTests
 
-FROM eclipse-temurin:25.0.3_9-jre-noble@sha256:2f1da100788559b397bcf48c736169ea5b070bde84e55f203bbee8e83d87a175
+FROM eclipse-temurin:26.0.2.1_1-jre-noble@sha256:adfd44c114916dc79fa9a24087fbac34252096edb9892d1c2d9d82db3f8947b3
 
 RUN apt-get update \
     && apt-get upgrade --yes \
